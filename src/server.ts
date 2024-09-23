@@ -1,7 +1,7 @@
 import config from 'config';
 
 import app from './app';
-import logger from './configs/logger';
+import logger from './config/logger';
 
 const startServer = () => {
     const PORT = config.get('server.port');

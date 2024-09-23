@@ -3,7 +3,7 @@ import { HttpError } from 'http-errors';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
 
-import logger from '../configs/logger';
+import logger from '../config/logger';
 
 export const globalErrorHandler = (
     err: HttpError & { errors?: never[] },
