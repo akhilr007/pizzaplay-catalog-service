@@ -1,7 +1,5 @@
 import { createLogger, format, transports } from 'winston';
 
-import { Config } from '.';
-
 const { combine, timestamp, label, printf } = format;
 
 const myFormat = printf(({ level, message, label, timestamp }) => {
@@ -33,19 +31,19 @@ const logger = createLogger({
             dirname: 'logs',
             filename: 'combined.log',
             level: 'info',
-            silent: Config.NODE_ENV === 'test',
+            silent: process.env.NODE_ENV === 'test',
             format: fileFormat,
         }),
         new transports.File({
             dirname: 'logs',
             filename: 'error.log',
             level: 'error',
-            silent: Config.NODE_ENV === 'test',
+            silent: process.env.NODE_ENV === 'test',
             format: fileFormat,
         }),
         new transports.Console({
             level: 'info',
-            silent: Config.NODE_ENV === 'test',
+            silent: process.env.NODE_ENV === 'test',
             format: consoleFormat,
         }),
     ],
