@@ -12,4 +12,8 @@ export class CategoryService {
     async getAll(): Promise<Category[]> {
         return this.categoryRepository.getAllCategories();
     }
+
+    async getById(categoryId: string): Promise<Category | null> {
+        return this.categoryRepository.getById(categoryId);
+    }
 }

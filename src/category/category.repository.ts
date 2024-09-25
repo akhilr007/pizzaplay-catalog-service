@@ -11,4 +11,8 @@ export class CategoryRepository {
     async getAllCategories(): Promise<Category[]> {
         return this.model.find({});
     }
+
+    async getById(id: string): Promise<Category | null> {
+        return this.model.findOne({ _id: id });
+    }
 }

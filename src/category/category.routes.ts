@@ -29,4 +29,8 @@ router.post(
 
 router.get('/', (req, res, next) => categoryController.getAll(req, res, next));
 
+router.get('/:id', (req, res, next) =>
+    categoryController.getById(req, res, next),
+);
+
 export default router;
