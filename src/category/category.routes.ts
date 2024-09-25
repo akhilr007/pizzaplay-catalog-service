@@ -1,7 +1,9 @@
 import express from 'express';
 
-import authenticate from '../common/authenticate';
-import { validateData } from '../common/validateData';
+import { Roles } from '../common/constants';
+import authenticate from '../common/middlewares/authenticate';
+import { canAccess } from '../common/middlewares/canAccess';
+import { validateData } from '../common/middlewares/validateData';
 import logger from '../config/logger';
 import { CategoryController } from './category.controller';
 import Categories from './category.model';
@@ -17,8 +19,12 @@ const categoryService = new CategoryService(categoryRepository);
 
 const categoryController = new CategoryController(categoryService, logger);
 
-router.post('/', authenticate, validateData(CategorySchema), (req, res, next) =>
-    categoryController.create(req, res, next),
+router.post(
+    '/',
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    validateData(CategorySchema),
+    (req, res, next) => categoryController.create(req, res, next),
 );
 
 export default router;
