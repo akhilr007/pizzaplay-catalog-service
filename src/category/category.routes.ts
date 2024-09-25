@@ -27,4 +27,18 @@ router.post(
     (req, res, next) => categoryController.create(req, res, next),
 );
 
+router.get('/', (req, res, next) => categoryController.getAll(req, res, next));
+
+router.get('/:id', (req, res, next) =>
+    categoryController.getById(req, res, next),
+);
+
+router.patch(
+    '/:id',
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    validateData(CategorySchema),
+    (req, res, next) => categoryController.updateById(req, res, next),
+);
+
 export default router;

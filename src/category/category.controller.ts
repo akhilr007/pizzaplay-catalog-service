@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+import createHttpError from 'http-errors';
 import { StatusCodes } from 'http-status-codes';
+import mongoose from 'mongoose';
 import { Logger } from 'winston';
 
 import { CategoryService } from './category.service';
@@ -31,6 +33,126 @@ export class CategoryController {
             });
 
             res.status(StatusCodes.CREATED).json({ id: category._id });
+        } catch (error) {
+            this.logger.error(error);
+            next(error);
+        }
+    }
+
+    async getAll(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        try {
+            const categories = await this.categoryService.getAll();
+
+            this.logger.info('Successfully retrieved all categories');
+
+            res.status(StatusCodes.OK).json(categories);
+        } catch (error) {
+            this.logger.error(error);
+            next(error);
+        }
+    }
+
+    async getById(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        const categoryId = req.params.id;
+        this.logger.info(
+            'CategoryController :: Request for getting a category with id ' +
+                categoryId,
+        );
+
+        if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+            this.logger.error(
+                'CategoryController :: Invalid category id format: ' +
+                    categoryId,
+            );
+            next(createHttpError(StatusCodes.BAD_REQUEST, 'Invalid URL param'));
+            return;
+        }
+
+        try {
+            const category = await this.categoryService.getById(categoryId);
+            if (!category) {
+                this.logger.error(
+                    'CategoryController :: Category not found with id:' +
+                        categoryId,
+                );
+                next(
+                    createHttpError(
+                        StatusCodes.BAD_REQUEST,
+                        'Invalid url param',
+                    ),
+                );
+                return;
+            }
+
+            this.logger.info(
+                'Successfully retrieved category with id ' + categoryId,
+            );
+            res.status(StatusCodes.OK).send(category);
+        } catch (error) {
+            this.logger.error(error);
+            next(error);
+        }
+    }
+
+    async updateById(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        const categoryId = req.params.id;
+        this.logger.info(
+            'CategoryController :: Request for updating category with id ' +
+                categoryId,
+        );
+
+        if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+            this.logger.error(
+                'CategoryController :: Invalid category id format: ' +
+                    categoryId,
+            );
+            next(createHttpError(StatusCodes.BAD_REQUEST, 'Invalid URL param'));
+            return;
+        }
+
+        try {
+            const validatedData = req.body;
+
+            const existingCategory =
+                await this.categoryService.getById(categoryId);
+
+            if (!existingCategory) {
+                this.logger.error(
+                    'CategoryController :: Category not found with id: ' +
+                        categoryId,
+                );
+                next(
+                    createHttpError(
+                        StatusCodes.NOT_FOUND,
+                        'Category not found',
+                    ),
+                );
+                return;
+            }
+
+            const updatedCategory = await this.categoryService.updateById(
+                categoryId,
+                validatedData,
+            );
+
+            this.logger.info(
+                'CategoryController :: Successfully updated category with id ' +
+                    categoryId,
+            );
+
+            res.status(StatusCodes.OK).send(updatedCategory);
         } catch (error) {
             this.logger.error(error);
             next(error);
