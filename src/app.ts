@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
@@ -7,6 +8,7 @@ import v1Routes from './routes/v1.routes';
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/api/v1', v1Routes);
 

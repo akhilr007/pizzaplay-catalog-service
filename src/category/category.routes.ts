@@ -1,5 +1,6 @@
 import express from 'express';
 
+import authenticate from '../common/authenticate';
 import { validateData } from '../common/validateData';
 import logger from '../config/logger';
 import { CategoryController } from './category.controller';
@@ -16,7 +17,7 @@ const categoryService = new CategoryService(categoryRepository);
 
 const categoryController = new CategoryController(categoryService, logger);
 
-router.post('/', validateData(CategorySchema), (req, res, next) =>
+router.post('/', authenticate, validateData(CategorySchema), (req, res, next) =>
     categoryController.create(req, res, next),
 );
 
