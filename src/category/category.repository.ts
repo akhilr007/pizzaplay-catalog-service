@@ -7,4 +7,8 @@ export class CategoryRepository {
     async create(category: Category) {
         return this.model.create(category);
     }
+
+    async getAllCategories(): Promise<Category[]> {
+        return this.model.find({});
+    }
 }

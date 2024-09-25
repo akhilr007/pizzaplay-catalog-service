@@ -36,4 +36,21 @@ export class CategoryController {
             next(error);
         }
     }
+
+    async getAll(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        try {
+            const categories = await this.categoryService.getAll();
+
+            this.logger.info('Successfully retrieved all categories');
+
+            res.status(StatusCodes.OK).json(categories);
+        } catch (error) {
+            this.logger.error(error);
+            next(error);
+        }
+    }
 }

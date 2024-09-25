@@ -8,4 +8,8 @@ export class CategoryService {
         const newCategory = await this.categoryRepository.create(category);
         return newCategory;
     }
+
+    async getAll(): Promise<Category[]> {
+        return this.categoryRepository.getAllCategories();
+    }
 }

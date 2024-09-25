@@ -27,4 +27,6 @@ router.post(
     (req, res, next) => categoryController.create(req, res, next),
 );
 
+router.get('/', (req, res, next) => categoryController.getAll(req, res, next));
+
 export default router;
