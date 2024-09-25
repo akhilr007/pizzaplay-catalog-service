@@ -33,4 +33,12 @@ router.get('/:id', (req, res, next) =>
     categoryController.getById(req, res, next),
 );
 
+router.patch(
+    '/:id',
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    validateData(CategorySchema),
+    (req, res, next) => categoryController.updateById(req, res, next),
+);
+
 export default router;

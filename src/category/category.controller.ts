@@ -101,4 +101,61 @@ export class CategoryController {
             next(error);
         }
     }
+
+    async updateById(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        const categoryId = req.params.id;
+        this.logger.info(
+            'CategoryController :: Request for updating category with id ' +
+                categoryId,
+        );
+
+        if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+            this.logger.error(
+                'CategoryController :: Invalid category id format: ' +
+                    categoryId,
+            );
+            next(createHttpError(StatusCodes.BAD_REQUEST, 'Invalid URL param'));
+            return;
+        }
+
+        try {
+            const validatedData = req.body;
+
+            const existingCategory =
+                await this.categoryService.getById(categoryId);
+
+            if (!existingCategory) {
+                this.logger.error(
+                    'CategoryController :: Category not found with id: ' +
+                        categoryId,
+                );
+                next(
+                    createHttpError(
+                        StatusCodes.NOT_FOUND,
+                        'Category not found',
+                    ),
+                );
+                return;
+            }
+
+            const updatedCategory = await this.categoryService.updateById(
+                categoryId,
+                validatedData,
+            );
+
+            this.logger.info(
+                'CategoryController :: Successfully updated category with id ' +
+                    categoryId,
+            );
+
+            res.status(StatusCodes.OK).send(updatedCategory);
+        } catch (error) {
+            this.logger.error(error);
+            next(error);
+        }
+    }
 }

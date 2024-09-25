@@ -15,4 +15,11 @@ export class CategoryRepository {
     async getById(id: string): Promise<Category | null> {
         return this.model.findOne({ _id: id });
     }
+
+    async updateById(
+        id: string,
+        category: Partial<Category>,
+    ): Promise<Category | null> {
+        return this.model.findByIdAndUpdate(id, category, { new: true }).exec();
+    }
 }
