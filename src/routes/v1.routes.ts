@@ -4,6 +4,6 @@ import categoryRoutes from '../category/category.routes';
 
 const router = Router();
 
-router.use('categories', categoryRoutes);
+router.use('/categories', categoryRoutes);
 
 export default router;

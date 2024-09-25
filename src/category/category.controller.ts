@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { Logger } from 'winston';
 
-import logger from '../config/logger';
+import { CategoryService } from './category.service';
+import { Category } from './category.types';
 
 export class CategoryController {
-    constructor(public logger: Logger) {}
+    constructor(
+        private categoryService: CategoryService,
+        private logger: Logger,
+    ) {}
 
     async create(
         req: Request,
@@ -12,9 +17,22 @@ export class CategoryController {
         next: NextFunction,
     ): Promise<void> {
         try {
-            res.json({ message: 'category created' });
+            const { name, priceConfiguration, attributes } =
+                req.body as Category;
+
+            const category = await this.categoryService.create({
+                name,
+                priceConfiguration,
+                attributes,
+            });
+
+            this.logger.info('Successfully created category', {
+                id: category._id,
+            });
+
+            res.status(StatusCodes.CREATED).json({ id: category._id });
         } catch (error) {
-            logger.error(error);
+            this.logger.error(error);
             next(error);
         }
     }

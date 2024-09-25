@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import { globalErrorHandler } from './middlewares/globalErrorHandler';
+import { globalErrorHandler } from './common/globalErrorHandler';
 import v1Routes from './routes/v1.routes';
 
 const app = express();
