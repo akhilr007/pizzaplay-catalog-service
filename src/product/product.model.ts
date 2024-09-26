@@ -1,28 +1,33 @@
 import mongoose from 'mongoose';
 
-const productConfigurationSchema = new mongoose.Schema({
+import { Attribute, PriceConfiguration, Product } from './product.type';
+
+const priceConfigurationSchema = new mongoose.Schema<PriceConfiguration>({
     priceType: {
         type: String,
         enum: ['base', 'additional'],
+        required: true,
     },
     availableOptions: {
         type: Map,
         of: Number,
+        required: true,
     },
 });
 
-const attributeSchema = new mongoose.Schema({
+const attributeSchema = new mongoose.Schema<Attribute>({
     name: {
         type: String,
         trim: true,
+        required: true,
     },
     value: {
         type: mongoose.Schema.Types.Mixed,
-        trim: true,
+        required: true,
     },
 });
 
-const productSchema = new mongoose.Schema(
+const productSchema = new mongoose.Schema<Product>(
     {
         name: {
             type: String,
@@ -41,7 +46,8 @@ const productSchema = new mongoose.Schema(
         },
         priceConfiguration: {
             type: Map,
-            of: productConfigurationSchema,
+            of: priceConfigurationSchema,
+            required: true,
         },
         attributes: [attributeSchema],
         tenantId: {
@@ -52,6 +58,7 @@ const productSchema = new mongoose.Schema(
         categoryId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Category',
+            required: true,
         },
         isPublished: {
             type: Boolean,
