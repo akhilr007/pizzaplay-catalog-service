@@ -37,12 +37,20 @@ export class ProductService {
 
     async updateProduct(data: {
         productId: string;
+        tenantId: string;
+        isAdmin: boolean;
         body: Product;
         imageFile: UploadedFile | undefined;
     }) {
-        const { productId, body, imageFile } = data;
+        const { productId, body, imageFile, tenantId, isAdmin } = data;
 
         const existingProduct = await this.getById(productId);
+
+        if (isAdmin === false) {
+            if (existingProduct?.tenantId !== String(tenantId)) {
+                throw createHttpError(StatusCodes.FORBIDDEN, 'Access Denied');
+            }
+        }
 
         if (!existingProduct) {
             throw createHttpError(StatusCodes.NOT_FOUND, 'Product not found');

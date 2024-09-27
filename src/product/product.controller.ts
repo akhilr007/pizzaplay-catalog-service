@@ -5,6 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
 import { Logger } from 'winston';
 
+import { AuthRequest } from '../common/types';
 import { FileStorage } from '../common/types/storage';
 import { ProductService } from './product.service';
 
@@ -58,9 +59,14 @@ export class ProductController {
         }
 
         try {
+            const tenantId = (req as AuthRequest).auth.tenant;
+            const isAdmin = (req as AuthRequest).auth.role === 'admin';
+
             const { files, body } = req;
             const updatedProduct = await this.productService.updateProduct({
                 productId,
+                tenantId,
+                isAdmin,
                 body,
                 imageFile: files?.image as UploadedFile,
             });
