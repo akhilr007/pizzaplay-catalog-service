@@ -5,6 +5,6 @@ export class ProductRepository {
     constructor(private model: typeof Products) {}
 
     async create(product: Product) {
-        return this.model.create(product);
+        return await this.model.create(product);
     }
 }

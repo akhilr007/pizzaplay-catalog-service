@@ -31,24 +31,6 @@ const AttributeSchema = z.object({
     }),
 });
 
-// const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-// const ACCEPTED_IMAGE_TYPES = [
-//     'image/jpeg',
-//     'image/jpg',
-//     'image/png',
-//     'image/webp',
-// ];
-
-// const ImageSchema = z.object({
-//     image: z
-//         .instanceof(File)
-//         .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
-//         .refine(
-//             (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-//             'Only .jpg, .jpeg, .png and .webp formats are supported.',
-//         ),
-// });
-
 export const ProductSchema = z.object({
     name: z
         .string({
@@ -62,7 +44,6 @@ export const ProductSchema = z.object({
             invalid_type_error: 'Product Description must be string',
         })
         .trim(),
-    // image: ImageSchema,
     priceConfiguration: z.preprocess(
         (arg) => (typeof arg === 'string' ? JSON.parse(arg) : arg),
         PriceConfigurationSchema,
