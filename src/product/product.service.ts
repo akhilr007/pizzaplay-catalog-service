@@ -4,7 +4,8 @@ import { Product } from './product.type';
 export class ProductService {
     constructor(private productRepository: ProductRepository) {}
 
-    async create(product: Product): Promise<Product> {
-        return this.productRepository.create(product);
+    async create(product: Product) {
+        const newProduct = await this.productRepository.create(product);
+        return newProduct;
     }
 }
