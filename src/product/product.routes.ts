@@ -19,9 +19,13 @@ const router = express.Router();
 
 const productRepository = new ProductRepository(Products);
 
-const productService = new ProductService(productRepository);
-
 const cloudinaryStorage = new CloudinaryStorage();
+
+const productService = new ProductService(
+    productRepository,
+    cloudinaryStorage,
+    logger,
+);
 
 const productController = new ProductController(
     productService,
@@ -49,4 +53,23 @@ router.post(
     (req, res, next) => productController.create(req, res, next),
 );
 
+router.put(
+    '/:id',
+    authenticate,
+    canAccess([Roles.ADMIN, Roles.MANAGER]),
+    fileUpload({
+        limits: { fileSize: 500 * 1024 },
+        abortOnLimit: true,
+        limitHandler: (req, res, next) => {
+            next(
+                createHttpError(
+                    StatusCodes.BAD_REQUEST,
+                    'File size exceeds the limit',
+                ),
+            );
+        },
+    }),
+    validateData(ProductSchema),
+    (req, res, next) => productController.update(req, res, next),
+);
 export default router;

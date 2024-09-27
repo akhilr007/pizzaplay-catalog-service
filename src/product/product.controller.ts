@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { UploadedFile } from 'express-fileupload';
 import createHttpError from 'http-errors';
 import { StatusCodes } from 'http-status-codes';
-import { v4 as uuidv4 } from 'uuid';
+import mongoose from 'mongoose';
 import { Logger } from 'winston';
 
 import { FileStorage } from '../common/types/storage';
@@ -20,60 +20,56 @@ export class ProductController {
         res: Response,
         next: NextFunction,
     ): Promise<void> {
+        this.logger.info(
+            'ProductController :: Request to create a new Product',
+        );
+
         try {
+            const { files, body } = req;
+
+            const product = await this.productService.createProduct({
+                body,
+                imageFile: files?.image as UploadedFile,
+            });
+
             this.logger.info(
-                'ProductController :: Request to create a new Product',
+                'Product created successfully with id' + product._id,
             );
 
-            const { files } = req;
-            if (!files || !files.image) {
-                this.logger.error('Product Image is required');
-                next(
-                    createHttpError(
-                        StatusCodes.BAD_REQUEST,
-                        'Image is required',
-                    ),
-                );
-                return;
-            }
+            res.status(StatusCodes.OK).json({ id: product._id });
+        } catch (error) {
+            next(error);
+        }
+    }
 
-            const imageFile = files.image as UploadedFile;
-            const imageName = uuidv4();
-            const imageUrl = await this.storage.upload({
-                fileName: imageName,
-                fileData: imageFile.data,
+    async update(req: Request, res: Response, next: NextFunction) {
+        const productId = req.params.id;
+        this.logger.info(
+            'ProductController :: Request for updating product with id ' +
+                productId,
+        );
+
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            this.logger.error(
+                'ProductController :: Invalid product id format: ' + productId,
+            );
+            next(createHttpError(StatusCodes.BAD_REQUEST, 'Invalid URL param'));
+            return;
+        }
+
+        try {
+            const { files, body } = req;
+            const updatedProduct = await this.productService.updateProduct({
+                productId,
+                body,
+                imageFile: files?.image as UploadedFile,
             });
 
-            this.logger.info(imageUrl);
+            this.logger.info(
+                `Product updated successfully with id ${productId}`,
+            );
 
-            const {
-                name,
-                description,
-                priceConfiguration,
-                attributes,
-                tenantId,
-                categoryId,
-                isPublished,
-            } = req.body;
-
-            const product = {
-                name,
-                description,
-                priceConfiguration,
-                attributes,
-                tenantId,
-                categoryId,
-                isPublished,
-                image: imageName,
-            };
-
-            const newProduct = await this.productService.create(product);
-
-            this.logger.info('Product created successfully with id', {
-                id: newProduct._id,
-            });
-
-            res.status(StatusCodes.OK).json(newProduct);
+            res.status(StatusCodes.OK).json(updatedProduct);
         } catch (error) {
             next(error);
         }
