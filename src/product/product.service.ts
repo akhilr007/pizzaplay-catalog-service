@@ -6,7 +6,7 @@ import { Logger } from 'winston';
 
 import { FileStorage } from '../common/types/storage';
 import { ProductRepository } from './product.repository';
-import { Filter, Product } from './product.type';
+import { Filter, PaginateQuery, Product } from './product.type';
 
 export class ProductService {
     constructor(
@@ -71,12 +71,19 @@ export class ProductService {
         );
     }
 
-    async getProducts(q: string, filters: Filter): Promise<Product[]> {
+    async getProducts(
+        q: string,
+        filters: Filter,
+        paginateQuery: PaginateQuery,
+    ) {
         const searchQueryRegExp = new RegExp(q, 'i');
 
         const matchQuery = { ...filters, name: searchQueryRegExp };
 
-        const products = await this.productRepository.getAggregate(matchQuery);
+        const products = await this.productRepository.getAggregate(
+            matchQuery,
+            paginateQuery,
+        );
         return products;
     }
 

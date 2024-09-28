@@ -1,5 +1,6 @@
+import { paginationLabels } from '../config/pagination';
 import Products from './product.model';
-import { Product } from './product.type';
+import { PaginateQuery, Product } from './product.type';
 
 export class ProductRepository {
     constructor(private model: typeof Products) {}
@@ -18,34 +19,37 @@ export class ProductRepository {
             .exec();
     }
 
-    async getAggregate(matchQuery: object) {
-        return await this.model
-            .aggregate([
-                {
-                    $match: matchQuery,
-                },
-                {
-                    $lookup: {
-                        from: 'categories',
-                        localField: 'categoryId',
-                        foreignField: '_id',
-                        as: 'category',
-                        pipeline: [
-                            {
-                                $project: {
-                                    _id: 1,
-                                    name: 1,
-                                    attributes: 1,
-                                    priceConfiguration: 1,
-                                },
+    async getAggregate(matchQuery: object, paginateQuery: PaginateQuery) {
+        const aggregate = this.model.aggregate([
+            {
+                $match: matchQuery,
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'categoryId',
+                    foreignField: '_id',
+                    as: 'category',
+                    pipeline: [
+                        {
+                            $project: {
+                                _id: 1,
+                                name: 1,
+                                attributes: 1,
+                                priceConfiguration: 1,
                             },
-                        ],
-                    },
+                        },
+                    ],
                 },
-                {
-                    $unwind: '$category',
-                },
-            ])
-            .exec();
+            },
+            {
+                $unwind: '$category',
+            },
+        ]);
+
+        return this.model.aggregatePaginate(aggregate, {
+            ...paginateQuery,
+            customLabels: paginationLabels,
+        });
     }
 }
