@@ -55,6 +55,5 @@ const categorySchema = new mongoose.Schema<Category>(
     },
 );
 
-export const Categories = mongoose.model('Category', categorySchema);
-
+const Categories = mongoose.model('Category', categorySchema);
 export default Categories;
