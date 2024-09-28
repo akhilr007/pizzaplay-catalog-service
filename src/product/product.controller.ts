@@ -8,7 +8,7 @@ import { Logger } from 'winston';
 import { AuthRequest } from '../common/types';
 import { FileStorage } from '../common/types/storage';
 import { ProductService } from './product.service';
-import { Filter } from './product.type';
+import { Filter, Product } from './product.type';
 
 export class ProductController {
     constructor(
@@ -125,8 +125,22 @@ export class ProductController {
                 },
             );
 
+            const finalProducts = (products.data as Product[]).map(
+                (product: Product) => {
+                    return {
+                        ...product,
+                        image: this.productService.getImageUri(product.image),
+                    };
+                },
+            );
+
             this.logger.info('Products retrieved successfully');
-            res.status(StatusCodes.OK).json(products);
+            res.status(StatusCodes.OK).json({
+                data: finalProducts,
+                total: products.total,
+                pageSize: products.pageSize,
+                currentPage: products.currentPage,
+            });
         } catch (error) {
             next(error);
         }
