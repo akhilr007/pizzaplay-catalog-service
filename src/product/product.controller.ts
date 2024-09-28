@@ -187,4 +187,36 @@ export class ProductController {
             next(error);
         }
     }
+
+    async deleteProduct(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        const productId = req.params.id;
+        this.logger.info(
+            'ProductController :: Request to delete a Product with ID: ' +
+                productId,
+        );
+
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            this.logger.error(
+                'ProductController :: Invalid product id format: ' + productId,
+            );
+            next(createHttpError(StatusCodes.BAD_REQUEST, 'Invalid URL param'));
+            return;
+        }
+
+        try {
+            const response = await this.productService.deleteProduct(productId);
+
+            this.logger.info(
+                'Successfully deleted a product with ID: ' + productId,
+            );
+
+            res.status(StatusCodes.OK).json({ success: response.acknowledged });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

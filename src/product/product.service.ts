@@ -87,6 +87,17 @@ export class ProductService {
         return products;
     }
 
+    async deleteProduct(productId: string) {
+        const product = await this.getById(productId);
+        if (!product) {
+            throw createHttpError(StatusCodes.NOT_FOUND, 'Product not found');
+        }
+
+        await this.deleteImage(product?.image);
+        const response = await this.productRepository.delete(productId);
+        return response;
+    }
+
     parseProductData(body: Product, imageName: string) {
         const {
             name,

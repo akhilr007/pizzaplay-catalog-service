@@ -52,4 +52,8 @@ export class ProductRepository {
             customLabels: paginationLabels,
         });
     }
+
+    async delete(productId: string) {
+        return await this.model.deleteOne({ _id: productId });
+    }
 }
