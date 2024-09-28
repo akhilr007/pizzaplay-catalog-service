@@ -17,4 +17,35 @@ export class ProductRepository {
             .findByIdAndUpdate(id, product, { new: true })
             .exec();
     }
+
+    async getAggregate(matchQuery: object) {
+        return await this.model
+            .aggregate([
+                {
+                    $match: matchQuery,
+                },
+                {
+                    $lookup: {
+                        from: 'categories',
+                        localField: 'categoryId',
+                        foreignField: '_id',
+                        as: 'category',
+                        pipeline: [
+                            {
+                                $project: {
+                                    _id: 1,
+                                    name: 1,
+                                    attributes: 1,
+                                    priceConfiguration: 1,
+                                },
+                            },
+                        ],
+                    },
+                },
+                {
+                    $unwind: '$category',
+                },
+            ])
+            .exec();
+    }
 }
