@@ -87,7 +87,7 @@ export class ProductService {
         return products;
     }
 
-    private parseProductData(body: Product, imageName: string) {
+    parseProductData(body: Product, imageName: string) {
         const {
             name,
             description,

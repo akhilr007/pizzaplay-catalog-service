@@ -145,4 +145,46 @@ export class ProductController {
             next(error);
         }
     }
+
+    async getProduct(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        const productId = req.params.id;
+        this.logger.info(
+            'ProductController :: Request to get a Product with ID: ' +
+                productId,
+        );
+
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            this.logger.error(
+                'ProductController :: Invalid product id format: ' + productId,
+            );
+            next(createHttpError(StatusCodes.BAD_REQUEST, 'Invalid URL param'));
+            return;
+        }
+
+        try {
+            const product = await this.productService.getById(productId);
+            if (!product) {
+                next(
+                    createHttpError(StatusCodes.NOT_FOUND, 'Product not found'),
+                );
+                return;
+            }
+
+            const finalProduct = this.productService.parseProductData(
+                product,
+                this.productService.getImageUri(product.image),
+            );
+
+            this.logger.info(
+                'Successfully retrieved a product with ID: ' + productId,
+            );
+            res.status(StatusCodes.OK).json(finalProduct);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

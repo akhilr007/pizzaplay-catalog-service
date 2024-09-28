@@ -76,4 +76,9 @@ router.put(
 router.get('/', (req, res, next) =>
     productController.getProducts(req, res, next),
 );
+
+router.get('/:id', (req, res, next) =>
+    productController.getProduct(req, res, next),
+);
+
 export default router;
