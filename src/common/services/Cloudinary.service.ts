@@ -43,6 +43,11 @@ export class CloudinaryStorage implements FileStorage {
     }
 
     getObjectUri(fileName: string): string {
-        return this.cloudinary.url(fileName);
+        const imageUrl = this.cloudinary.url(fileName);
+        if (imageUrl) {
+            return imageUrl;
+        }
+
+        throw new Error('Error while fetching image url: ' + fileName);
     }
 }

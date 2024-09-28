@@ -129,6 +129,10 @@ export class ProductService {
         }
     }
 
+    getImageUri(fileName: string) {
+        return this.storage.getObjectUri(fileName);
+    }
+
     async getById(productId: string): Promise<Product | null> {
         return await this.productRepository.getById(productId);
     }
