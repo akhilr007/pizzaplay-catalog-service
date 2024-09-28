@@ -72,4 +72,8 @@ router.put(
     validateData(ProductSchema),
     (req, res, next) => productController.update(req, res, next),
 );
+
+router.get('/', (req, res, next) =>
+    productController.getProducts(req, res, next),
+);
 export default router;

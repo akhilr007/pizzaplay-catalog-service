@@ -8,6 +8,7 @@ import { Logger } from 'winston';
 import { AuthRequest } from '../common/types';
 import { FileStorage } from '../common/types/storage';
 import { ProductService } from './product.service';
+import { Filter } from './product.type';
 
 export class ProductController {
     constructor(
@@ -76,6 +77,48 @@ export class ProductController {
             );
 
             res.status(StatusCodes.OK).json(updatedProduct);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getProducts(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        this.logger.info(
+            'ProductController :: Request to retrieve all products',
+        );
+        try {
+            const { q, tenantId, categoryId, isPublished } = req.query;
+
+            const filters: Filter = {};
+
+            if (isPublished === 'true') {
+                filters.isPublished = true;
+            }
+
+            if (tenantId) {
+                filters.tenantId = tenantId as string;
+            }
+
+            if (
+                categoryId &&
+                mongoose.Types.ObjectId.isValid(categoryId as string)
+            ) {
+                filters.categoryId = new mongoose.Types.ObjectId(
+                    categoryId as string,
+                );
+            }
+
+            const products = await this.productService.getProducts(
+                q as string,
+                filters,
+            );
+
+            this.logger.info('Products retrieved successfully');
+            res.status(StatusCodes.OK).json(products);
         } catch (error) {
             next(error);
         }
