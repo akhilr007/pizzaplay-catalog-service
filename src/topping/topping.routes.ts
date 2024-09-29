@@ -9,29 +9,25 @@ import { canAccess } from '../common/middlewares/canAccess';
 import { validateData } from '../common/middlewares/validateData';
 import { CloudinaryStorage } from '../common/services/Cloudinary.service';
 import logger from '../config/logger';
-import { ProductController } from './product.controller';
-import Products from './product.model';
-import { ProductRepository } from './product.repository';
-import { ProductService } from './product.service';
-import { ProductSchema } from './product.validator';
+import { ToppingController } from './topping.controller';
+import Toppings from './topping.model';
+import { ToppingRepository } from './topping.repository';
+import { ToppingService } from './topping.service';
+import { ToppingSchema } from './topping.validator';
 
 const router = express.Router();
 
-const productRepository = new ProductRepository(Products);
+const toppingRepository = new ToppingRepository(Toppings);
 
 const cloudinaryStorage = new CloudinaryStorage();
 
-const productService = new ProductService(
-    productRepository,
+const toppingService = new ToppingService(
+    toppingRepository,
     cloudinaryStorage,
     logger,
 );
 
-const productController = new ProductController(
-    productService,
-    cloudinaryStorage,
-    logger,
-);
+const toppingController = new ToppingController(toppingService, logger);
 
 router.post(
     '/',
@@ -49,8 +45,8 @@ router.post(
             );
         },
     }),
-    validateData(ProductSchema),
-    (req, res, next) => productController.create(req, res, next),
+    validateData(ToppingSchema),
+    (req, res, next) => toppingController.create(req, res, next),
 );
 
 router.put(
@@ -69,22 +65,23 @@ router.put(
             );
         },
     }),
-    validateData(ProductSchema),
-    (req, res, next) => productController.update(req, res, next),
+    validateData(ToppingSchema),
+    (req, res, next) => toppingController.update(req, res, next),
 );
 
 router.get('/', (req, res, next) =>
-    productController.getProducts(req, res, next),
+    toppingController.getToppings(req, res, next),
 );
 
 router.get('/:id', (req, res, next) =>
-    productController.getProduct(req, res, next),
+    toppingController.getTopping(req, res, next),
 );
 
 router.delete(
     '/:id',
     authenticate,
     canAccess([Roles.ADMIN, Roles.MANAGER]),
-    (req, res, next) => productController.deleteProduct(req, res, next),
+    (req, res, next) => toppingController.deleteTopping(req, res, next),
 );
+
 export default router;

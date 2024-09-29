@@ -1,4 +1,4 @@
-import { Categories } from './category.model';
+import Categories from './category.model';
 import { Category } from './category.types';
 
 export class CategoryRepository {

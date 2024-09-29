@@ -3,5 +3,5 @@ export interface Topping {
     image: string;
     price: number;
     tenantId: string;
-    isPublished: boolean;
+    isPublished?: boolean;
 }
