@@ -73,9 +73,9 @@ router.get('/', (req, res, next) =>
     toppingController.getToppings(req, res, next),
 );
 
-// router.get('/:id', (req, res, next) =>
-//     toppingController.getProduct(req, res, next),
-// );
+router.get('/:id', (req, res, next) =>
+    toppingController.getTopping(req, res, next),
+);
 
 // router.delete(
 //     '/:id',

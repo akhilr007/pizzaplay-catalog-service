@@ -103,4 +103,46 @@ export class ToppingController {
             next(error);
         }
     }
+
+    async getTopping(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        const toppingId = req.params.id;
+        this.logger.info(
+            'ToppingController :: Request to get a Topping with ID: ' +
+                toppingId,
+        );
+
+        if (!mongoose.Types.ObjectId.isValid(toppingId)) {
+            this.logger.error(
+                'ToppingController :: Invalid topping id format: ' + toppingId,
+            );
+            next(createHttpError(StatusCodes.BAD_REQUEST, 'Invalid URL param'));
+            return;
+        }
+
+        try {
+            const topping = await this.toppingService.getById(toppingId);
+            if (!topping) {
+                next(
+                    createHttpError(StatusCodes.NOT_FOUND, 'Topping not found'),
+                );
+                return;
+            }
+
+            const finalTopping = this.toppingService.parseToppingData(
+                topping,
+                this.toppingService.getImageUri(topping.image),
+            );
+
+            this.logger.info(
+                'Successfully retrieved a topping with ID: ' + toppingId,
+            );
+            res.status(StatusCodes.OK).json(finalTopping);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
