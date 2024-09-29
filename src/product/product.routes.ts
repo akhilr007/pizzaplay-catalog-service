@@ -84,7 +84,7 @@ router.get('/:id', (req, res, next) =>
 router.delete(
     '/:id',
     authenticate,
-    canAccess([Roles.ADMIN, Roles.CUSTOMER]),
+    canAccess([Roles.ADMIN, Roles.MANAGER]),
     (req, res, next) => productController.deleteProduct(req, res, next),
 );
 export default router;
