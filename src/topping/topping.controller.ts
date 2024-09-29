@@ -78,4 +78,29 @@ export class ToppingController {
             next(error);
         }
     }
+
+    async getToppings(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        this.logger.info(
+            'ToppingController :: Request to retrieve all toppings',
+        );
+        try {
+            const toppings = await this.toppingService.getToppings();
+
+            const finalToppings = toppings.map((topping) => {
+                return {
+                    ...topping,
+                    image: this.toppingService.getImageUri(topping.image),
+                };
+            });
+
+            this.logger.info('Toppings retrieved successfully');
+            res.status(StatusCodes.OK).json(finalToppings);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

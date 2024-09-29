@@ -17,4 +17,8 @@ export class ToppingRepository {
             .findByIdAndUpdate(id, topping, { new: true })
             .exec();
     }
+
+    async getToppings() {
+        return await this.model.find({}).lean();
+    }
 }

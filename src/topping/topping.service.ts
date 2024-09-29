@@ -71,6 +71,10 @@ export class ToppingService {
         );
     }
 
+    async getToppings() {
+        return await this.toppingRepository.getToppings();
+    }
+
     parseToppingData(body: Topping, imageName: string) {
         const { name, tenantId, price, isPublished } = body;
 
@@ -100,6 +104,10 @@ export class ToppingService {
             await this.storage.delete(imageName);
             this.logger.info(`Image deleted successfully: ${imageName}`);
         }
+    }
+
+    getImageUri(fileName: string) {
+        return this.storage.getObjectUri(fileName);
     }
 
     async getById(toppingId: string) {

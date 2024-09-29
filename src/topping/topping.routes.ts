@@ -69,9 +69,9 @@ router.put(
     (req, res, next) => toppingController.update(req, res, next),
 );
 
-// router.get('/', (req, res, next) =>
-//     toppingController.getProducts(req, res, next),
-// );
+router.get('/', (req, res, next) =>
+    toppingController.getToppings(req, res, next),
+);
 
 // router.get('/:id', (req, res, next) =>
 //     toppingController.getProduct(req, res, next),
