@@ -145,4 +145,43 @@ export class ToppingController {
             next(error);
         }
     }
+
+    async deleteTopping(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        const toppingId = req.params.id;
+        this.logger.info(
+            'ToppingController :: Request to delete a Product with ID: ' +
+                toppingId,
+        );
+
+        if (!mongoose.Types.ObjectId.isValid(toppingId)) {
+            this.logger.error(
+                'ToppingController :: Invalid product id format: ' + toppingId,
+            );
+            next(createHttpError(StatusCodes.BAD_REQUEST, 'Invalid URL param'));
+            return;
+        }
+
+        try {
+            const tenantId = (req as AuthRequest).auth.tenant;
+            const isAdmin = (req as AuthRequest).auth.role === 'admin';
+
+            const response = await this.toppingService.deleteTopping(
+                toppingId,
+                tenantId,
+                isAdmin,
+            );
+
+            this.logger.info(
+                'Successfully deleted a topping with ID: ' + toppingId,
+            );
+
+            res.status(StatusCodes.OK).json({ success: response.acknowledged });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

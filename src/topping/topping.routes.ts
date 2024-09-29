@@ -77,10 +77,11 @@ router.get('/:id', (req, res, next) =>
     toppingController.getTopping(req, res, next),
 );
 
-// router.delete(
-//     '/:id',
-//     authenticate,
-//     canAccess([Roles.ADMIN, Roles.CUSTOMER]),
-//     (req, res, next) => toppingController.deleteProduct(req, res, next),
-// );
+router.delete(
+    '/:id',
+    authenticate,
+    canAccess([Roles.ADMIN, Roles.MANAGER]),
+    (req, res, next) => toppingController.deleteTopping(req, res, next),
+);
+
 export default router;

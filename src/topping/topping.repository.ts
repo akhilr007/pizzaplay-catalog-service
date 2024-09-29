@@ -21,4 +21,8 @@ export class ToppingRepository {
     async getToppings() {
         return await this.model.find({}).lean();
     }
+
+    async delete(id: string) {
+        return await this.model.deleteOne({ _id: id });
+    }
 }
