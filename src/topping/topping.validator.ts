@@ -10,7 +10,6 @@ export const ToppingSchema = z.object({
         .min(1),
     price: z.preprocess(
         (val) => {
-            // Preprocess the input: If it's a string, convert it to a number
             if (typeof val === 'string') {
                 const parsed = parseFloat(val);
                 return isNaN(parsed) ? undefined : parsed;

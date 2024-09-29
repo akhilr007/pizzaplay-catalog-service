@@ -35,6 +35,42 @@ export class ToppingService {
         return await this.toppingRepository.create(toppingData);
     }
 
+    async updateProduct(data: {
+        toppingId: string;
+        tenantId: string;
+        isAdmin: boolean;
+        body: Topping;
+        imageFile: UploadedFile | undefined;
+    }) {
+        const { toppingId, body, imageFile, tenantId, isAdmin } = data;
+
+        const existingTopping = await this.getById(toppingId);
+
+        if (isAdmin === false) {
+            if (existingTopping?.tenantId !== String(tenantId)) {
+                throw createHttpError(StatusCodes.FORBIDDEN, 'Access Denied');
+            }
+        }
+
+        if (!existingTopping) {
+            throw createHttpError(StatusCodes.NOT_FOUND, 'Product not found');
+        }
+
+        let imageName = existingTopping.image;
+
+        if (imageFile) {
+            imageName = await this.uploadImage(imageFile);
+            await this.deleteImage(existingTopping.image);
+        }
+
+        const updatedToppingData = this.parseToppingData(body, imageName);
+
+        return await this.toppingRepository.update(
+            toppingId,
+            updatedToppingData,
+        );
+    }
+
     parseToppingData(body: Topping, imageName: string) {
         const { name, tenantId, price, isPublished } = body;
 
@@ -57,5 +93,16 @@ export class ToppingService {
         this.logger.info(`Image uploaded successfully: ${imageUrl}`);
 
         return imageName;
+    }
+
+    private async deleteImage(imageName: string): Promise<void> {
+        if (imageName) {
+            await this.storage.delete(imageName);
+            this.logger.info(`Image deleted successfully: ${imageName}`);
+        }
+    }
+
+    async getById(toppingId: string) {
+        return await this.toppingRepository.getById(toppingId);
     }
 }

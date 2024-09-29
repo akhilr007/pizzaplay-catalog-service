@@ -49,25 +49,25 @@ router.post(
     (req, res, next) => toppingController.create(req, res, next),
 );
 
-// router.put(
-//     '/:id',
-//     authenticate,
-//     canAccess([Roles.ADMIN, Roles.MANAGER]),
-//     fileUpload({
-//         limits: { fileSize: 500 * 1024 },
-//         abortOnLimit: true,
-//         limitHandler: (req, res, next) => {
-//             next(
-//                 createHttpError(
-//                     StatusCodes.BAD_REQUEST,
-//                     'File size exceeds the limit',
-//                 ),
-//             );
-//         },
-//     }),
-//     validateData(ProductSchema),
-//     (req, res, next) => toppingController.update(req, res, next),
-// );
+router.put(
+    '/:id',
+    authenticate,
+    canAccess([Roles.ADMIN, Roles.MANAGER]),
+    fileUpload({
+        limits: { fileSize: 500 * 1024 },
+        abortOnLimit: true,
+        limitHandler: (req, res, next) => {
+            next(
+                createHttpError(
+                    StatusCodes.BAD_REQUEST,
+                    'File size exceeds the limit',
+                ),
+            );
+        },
+    }),
+    validateData(ToppingSchema),
+    (req, res, next) => toppingController.update(req, res, next),
+);
 
 // router.get('/', (req, res, next) =>
 //     toppingController.getProducts(req, res, next),
