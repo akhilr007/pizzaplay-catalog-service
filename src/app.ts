@@ -1,4 +1,6 @@
+import config from 'config';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
@@ -7,6 +9,12 @@ import v1Routes from './routes/v1.routes';
 
 const app = express();
 
+app.use(
+    cors({
+        origin: [config.get('frontend.url')],
+        credentials: true,
+    }),
+);
 app.use(express.json());
 app.use(cookieParser());
 
